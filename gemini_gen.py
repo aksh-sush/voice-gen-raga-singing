@@ -190,11 +190,9 @@ def generate_notes_gemini(raga: dict, thala: dict, avartanams: int = 4) -> list:
 
     try:
     response = _model.generate_content(
-        prompt,
-        generation_config={
-            "max_output_tokens": 50
-        }
-    )
+    prompt,
+    request_options={"timeout": 30}
+)
 
     raw = response.text.strip()
 
