@@ -99,65 +99,6 @@ Return ONLY JSON:
 }}
 """
 
-TASK
-────
-Generate a note sequence for the raga "{raga["name"]}" (Melakarta #{raga["melakarta_number"]}) 
-set to "{thala["name"]}" thala ({beats} beats per avartanam, grouping: {grouping}).
-
-RESEARCH STEP — do this before generating
-──────────────────────────────────────────
-1. Research and find about "{raga["name"]}" from Carnatic musicology sources — 
-   textbooks (e.g. Sambamurthy's "South Indian Music", T.V. Subba Rao's works), 
-   published notations of kritis in this raga, or if direct info is scarce, 
-   refer to sibling ragas sharing the same melakarta or similar note sets.
-2. Identify:
-   - Vadi (most important note)
-   - Samvadi (second most important note)
-   - Nyasa swaras (notes on which phrases can rest/end)
-   - Characteristic phrases or gamakas (ornaments) typical of this raga
-   - Any forbidden jumps or notes that are weak in this raga
-   - Whether the raga is audava, shadava, or sampoorna in either direction
-3. If you cannot find reliable information about "{raga["name"]}" from any 
-   Carnatic source or sibling raga, respond ONLY with:
-   CANNOT_FIND: <brief reason>
-   Do NOT fabricate rules.
-
-AVAILABLE NOTES (use ONLY these solfege labels)
-────────────────────────────────────────────────
-Scale: {scale_str}
-Arohanam:  {aroha}
-Avarohanam: {avaro}
-
-COMPOSITION RULES
-─────────────────
-- Generate exactly {avartanams} avartanams (cycles), each with exactly {beats} notes.
-- Each avartanam MUST start on S.
-- The very last note of the last avartanam MUST be S.
-- Weight the vadi and samvadi notes more heavily (they should appear more often).
-- End phrases on nyasa swaras where possible.
-- Respect arohanam for ascending runs and avarohanam for descending runs.
-- Avoid jumps that are uncharacteristic of this raga.
-- Each avartanam should be musically distinct but share the raga's character.
-- Use S' (upper Sa) sparingly, only at phrase peaks.
-
-OUTPUT FORMAT — return ONLY this JSON, no explanation, no markdown fences:
-{{
-  "raga": "{raga["name"]}",
-  "source_notes": "one sentence: what Carnatic source or reasoning you used",
-  "vadi": "<note>",
-  "samvadi": "<note>",
-  "nyasa": ["<note>", ...],
-  "avartanams": [
-    ["<note>", "<note>", ...],
-    ["<note>", "<note>", ...],
-    ["<note>", "<note>", ...],
-    ["<note>", "<note>", ...]
-  ]
-}}
-
-Each inner array must have exactly {beats} note strings.
-Only use notes from this set: {json.dumps(notes_list + ["S'"])}
-"""
 
 
 # ── Validator ─────────────────────────────────────────────────────────────────
