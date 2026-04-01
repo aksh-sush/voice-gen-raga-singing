@@ -9,27 +9,34 @@ def home():
 
 @app.route("/generate")
 def generate():
-    raga = {
-        "name": "Shankarabharanam",
-        "melakarta_number": 29,
-        "notes": {},
-        "arohanam": ["S","R","G","M","P","D","N","S'"],
-        "avarohanam": ["S'","N","D","P","M","G","R","S"]
-    }
+    try:
+        raga = {
+            "name": "Shankarabharanam",
+            "melakarta_number": 29,
+            "notes": {},
+            "arohanam": ["S","R","G","M","P","D","N","S'"],
+            "avarohanam": ["S'","N","D","P","M","G","R","S"]
+        }
 
-    thala = {
-        "name": "Adi",
-        "beats": 8,
-        "subdivisions": [4,2,2],
-        "subdivision_names": ["Laghu","Drutam","Drutam"]
-    }
+        thala = {
+            "name": "Adi",
+            "beats": 8,
+            "subdivisions": [4,2,2],
+            "subdivision_names": ["Laghu","Drutam","Drutam"]
+        }
 
-    result = generate_notes_gemini(raga, thala)
+        result = generate_notes_gemini(raga, thala)
 
-    return jsonify({
-        "status": "success",
-        "generated_notes": result
-    })
+        return jsonify({
+            "status": "success",
+            "generated_notes": result
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        })
 
 if __name__ == "__main__":
     app.run()
