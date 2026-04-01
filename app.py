@@ -13,7 +13,15 @@ def generate():
         raga = {
             "name": "Shankarabharanam",
             "melakarta_number": 29,
-            "notes": {},
+            "notes": {
+    "S": {"solfege": "S"},
+    "R": {"solfege": "R"},
+    "G": {"solfege": "G"},
+    "M": {"solfege": "M"},
+    "P": {"solfege": "P"},
+    "D": {"solfege": "D"},
+    "N": {"solfege": "N"}
+},
             "arohanam": ["S","R","G","M","P","D","N","S'"],
             "avarohanam": ["S'","N","D","P","M","G","R","S"]
         }
