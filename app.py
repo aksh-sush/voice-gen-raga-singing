@@ -5,6 +5,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
+    return "AI Singer Backend Running 🚀"
+
+
+@app.route("/generate")
+def generate():
     raga = {
         "name": "Shankarabharanam",
         "melakarta_number": 29,
@@ -26,6 +31,7 @@ def home():
         "status": "success",
         "generated_notes": result
     })
+
 
 if __name__ == "__main__":
     app.run()
