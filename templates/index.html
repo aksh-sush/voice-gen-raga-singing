@@ -486,7 +486,7 @@ async function regenerate(useGemini = false, silent = false) {
       currentAvartanams = data.avartanams;
       renderComposition(raga, thala, currentAvartanams);
       if (!silent) {
-        const src = data.source === 'gemini' ? 'Generated using Gemini ✓' : 'Generated locally ✓';
+        const src = data.source === 'gemini' ? 'Generated using Gemini ✓' : 'Generated';
         const warn = data.warning ? ` (Gemini fallback: ${data.warning})` : '';
         setStatus(src + warn, data.source === 'gemini' ? '#5eead4' : '#c8973a');
       } else {
