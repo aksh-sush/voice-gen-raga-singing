@@ -76,7 +76,7 @@ def _build_prompt(raga: dict, thala: dict, avartanams: int) -> str:
 
     grouping = "  +  ".join(f"{n} ({s} beats)" for n, s in zip(subdiv_names, subdivs))
 
-     return f"""
+    return f"""
 Generate Carnatic notes for raga {raga["name"]} in {thala["name"]} thala.
 
 Use only these notes:
