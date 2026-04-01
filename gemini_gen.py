@@ -50,7 +50,7 @@ import google.generativeai as genai
 
 # ── Config ────────────────────────────────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL   = "gemini-3-flash-preview"
+GEMINI_MODEL   = "gemini-2.5-pro"
 
 genai.configure(api_key=GEMINI_API_KEY)
 _model = genai.GenerativeModel(GEMINI_MODEL)
