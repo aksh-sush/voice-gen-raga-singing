@@ -189,10 +189,17 @@ def generate_notes_gemini(raga: dict, thala: dict, avartanams: int = 4) -> list:
     prompt = _build_prompt(raga, thala, avartanams)
 
     try:
-        response = _model.generate_content(prompt)
-        raw      = response.text.strip()
-    except Exception as e:
-        raise GeminiError(f"Gemini API error: {e}")
+    response = _model.generate_content(
+        prompt,
+        generation_config={
+            "max_output_tokens": 200
+        }
+    )
+
+    raw = response.text.strip()
+
+except Exception as e:
+    raise GeminiError(f"Gemini API error: {e}")
 
     # Check for explicit "cannot find" response
     if raw.upper().startswith("CANNOT_FIND"):
