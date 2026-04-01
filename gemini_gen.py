@@ -7,6 +7,7 @@ HOW TO USE IN raga_explorer.py
 ────────────────────────────────
 1. Import at the top:
        from gemini_gen import generate_notes_gemini, GeminiError
+       
 
 2. In _regenerate(), replace the direct _render_composition call with:
 
@@ -44,10 +45,11 @@ HOW TO USE IN raga_explorer.py
 
 import json
 import re
+import os
 import google.generativeai as genai
 
 # ── Config ────────────────────────────────────────────────────────────────────
-GEMINI_API_KEY = "AIzaSyBcsCCE7It2tIIIauerNisZ-AO5ts_XSLw"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL   = "gemini-3-flash-preview"
 
 genai.configure(api_key=GEMINI_API_KEY)
