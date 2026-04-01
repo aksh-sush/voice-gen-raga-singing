@@ -76,7 +76,28 @@ def _build_prompt(raga: dict, thala: dict, avartanams: int) -> str:
 
     grouping = "  +  ".join(f"{n} ({s} beats)" for n, s in zip(subdiv_names, subdivs))
 
-    return f"""You are an expert in Carnatic classical music with deep knowledge of ragas, their grammar, and composition rules.
+     return f"""
+Generate Carnatic notes for raga {raga["name"]} in {thala["name"]} thala.
+
+Use only these notes:
+{scale_str}
+
+Arohanam: {aroha}
+Avarohanam: {avaro}
+
+Rules:
+- Generate {avartanams} avartanams
+- Each avartanam must have {beats} notes
+- Start and end on S
+
+Return ONLY JSON:
+{{
+  "avartanams": [
+    ["S","R","G","M","P","D","N","S"],
+    ["S","N","D","P","M","G","R","S"]
+  ]
+}}
+"""
 
 TASK
 ────
@@ -184,7 +205,7 @@ def generate_notes_gemini(raga: dict, thala: dict, avartanams: int = 4) -> list:
             generation_config={
                 "max_output_tokens": 50
             },
-            request_options={"timeout": 15}
+            request_options={"timeout": 25}
         )
 
         raw = response.text.strip()
