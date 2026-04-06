@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Raga Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:        #0f0f14;
+    --accent:    #c8973a;
+    --accent2:   #7f5af0;
+    --accent3:   #e05a6a;
+    --text:      #e8e3d8;
+    --subtext:   #8a8070;
+    --card:      #1c1c26;
+    --border:    #2a2a38;
+    --aroha:     #5eead4;
+    --avaro:     #fb923c;
+    --beat0:     #5eead4;
+    --beat1:     #c8973a;
+    --beat2:     #7f5af0;
+    --beat3:     #fb923c;
+    --beat4:     #e05a6a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    padding: 0 0 48px;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 24px 40px 0;
+  }
+  .header-sub {
+    font-family: 'IM Fell English', serif;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: .12em;
+    margin-bottom: 4px;
+  }
+  .header-title {
+    font-family: 'IM Fell English', serif;
+    font-size: 30px;
+    font-weight: normal;
+    color: var(--text);
+    letter-spacing: .03em;
+  }
+  .header-rule {
+    height: 2px;
+    background: var(--accent);
+    margin-top: 10px;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    gap: 24px;
+    padding: 20px 40px 0;
+    flex-wrap: wrap;
+  }
+  .ctrl-group label {
+    display: block;
+    font-size: 10px;
+    color: var(--subtext);
+    letter-spacing: .15em;
+    margin-bottom: 6px;
+  }
+  select {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 28px 7px 10px;
+    font-family: 'IM Fell English', serif;
+    font-size: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    border-radius: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c8973a'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    min-width: 80px;
+    transition: border-color .2s;
+  }
+  select:focus { border-color: var(--accent); }
+  select option { background: var(--card); }
+
+  /* ── Info badges ── */
+  .info-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 40px 0;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .1em;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-family: 'IM Fell English', serif;
+  }
+  .badge-mela { background: var(--accent2); color: #fff; }
+  .badge-thala { background: var(--accent3); color: #fff; }
+  .info-freq {
+    font-size: 10px;
+    color: var(--subtext);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 40px;
+  }
+
+  /* ── Scale panels ── */
+  .scale-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 40px;
+  }
+  @media (max-width: 600px) {
+    .scale-panels { grid-template-columns: 1fr; }
+    .controls { flex-direction: column; }
+  }
+  .panel {
+    background: var(--card);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .panel-aroha  { border: 1px solid var(--aroha); }
+  .panel-avaro  { border: 1px solid var(--avaro); }
+  .panel-header {
+    font-size: 10px;
+    letter-spacing: .15em;
+    padding: 10px 14px 8px;
+  }
+  .panel-aroha .panel-header  { color: var(--aroha); }
+  .panel-avaro .panel-header  { color: var(--avaro); }
+  .panel-rule-aroha { height: 1px; background: var(--aroha); }
+  .panel-rule-avaro { height: 1px; background: var(--avaro); }
+  .panel-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+  .note-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 36px;
+  }
+  .note-solfege {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .note-freq {
+    font-size: 9px;
+    color: var(--subtext);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── Composition ── */
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .comp-title {
+    font-size: 10px;
+    color: var(--subtext);
+    letter-spacing: .12em;
+  }
+  .comp-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .btn {
+    background: var(--card);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: border-color .2s, color .2s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-gemini {
+    color: var(--accent2);
+    border-color: var(--accent2);
+  }
+  .btn-gemini:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn:disabled { opacity: .45; cursor: default; }
+
+  .status-line {
+    padding: 6px 40px 0;
+    font-size: 10px;
+    min-height: 18px;
+    transition: color .3s;
+  }
+
+  .comp-canvas-wrap {
+    padding: 14px 40px 0;
+    overflow-x: auto;
+  }
+
+  /* ── Composition table ── */
+  .comp-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .av-label {
+    font-size: 10px;
+    color: var(--subtext);
+    padding-right: 10px;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+  }
+  .beat-cell {
+    text-align: center;
+    padding: 2px 1px;
+    vertical-align: middle;
+  }
+  .beat-note {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.1;
+  }
+  .beat-num {
+    font-size: 8px;
+    color: var(--border);
+    line-height: 1;
+  }
+  .pipe-cell {
+    padding: 0 5px;
+    font-size: 15px;
+    color: var(--subtext);
+    vertical-align: middle;
+    text-align: center;
+  }
+  .endbar {
+    padding-left: 4px;
+    font-size: 16px;
+    color: var(--accent);
+    vertical-align: middle;
+  }
+
+  /* legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 40px 0;
+    font-size: 9px;
+    color: var(--subtext);
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-sub">ರಾಗ ದರ್ಶನ</div>
+  <div class="header-title">Raga Explorer</div>
+  <div class="header-rule"></div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="ctrl-group">
+    <label>SHRUTI</label>
+    <select id="shruti-sel"></select>
+  </div>
+  <div class="ctrl-group">
+    <label>RAGA</label>
+    <select id="raga-sel"></select>
+  </div>
+  <div class="ctrl-group">
+    <label>THALA</label>
+    <select id="thala-sel"></select>
+  </div>
+</div>
+
+<!-- Info badges -->
+<div class="info-strip">
+  <span class="badge badge-mela" id="badge-mela"></span>
+  <span class="badge badge-thala" id="badge-thala"></span>
+  <span class="info-freq" id="badge-freq"></span>
+</div>
+
+<div class="divider"></div>
+
+<!-- Scale panels -->
+<div class="scale-panels">
+  <div class="panel panel-aroha">
+    <div class="panel-header">↑&nbsp;&nbsp;AROHANAM</div>
+    <div class="panel-rule-aroha"></div>
+    <div class="panel-body" id="aroha-body"></div>
+  </div>
+  <div class="panel panel-avaro">
+    <div class="panel-header">↓&nbsp;&nbsp;AVAROHANAM</div>
+    <div class="panel-rule-avaro"></div>
+    <div class="panel-body" id="avaro-body"></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Composition header -->
+<div class="comp-header">
+  <span class="comp-title">GENERATED COMPOSITION — 4 avartanams</span>
+  <div class="comp-actions">
+    <button class="btn" id="btn-local" onclick="regenerate(false)">⟳&nbsp;Regenerate</button>
+    <button class="btn btn-gemini" id="btn-gemini" onclick="regenerate(true)">✦&nbsp;Gemini</button>
+  </div>
+</div>
+
+<!-- Status -->
+<div class="status-line" id="status"></div>
+
+<!-- Composition canvas -->
+<div class="comp-canvas-wrap">
+  <table class="comp-table" id="comp-table"></table>
+</div>
+
+<!-- Legend -->
+<div class="legend" id="legend"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let DATA = { shrutis: [], ragas: [], thalas: [] };
+let currentAvartanams = null;
+
+const BEAT_COLORS = ['#5eead4','#c8973a','#7f5af0','#fb923c','#e05a6a'];
+const ROMAN = ['I','II','III','IV'];
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+async function boot() {
+  const [s, r, t] = await Promise.all([
+    fetch('/api/shrutis').then(x => x.json()),
+    fetch('/api/ragas').then(x => x.json()),
+    fetch('/api/thalas').then(x => x.json()),
+  ]);
+  DATA.shrutis = s.shrutis;
+  DATA.ragas   = r.ragas;
+  DATA.thalas  = t.thalas;
+
+  populateSelect('shruti-sel', DATA.shrutis.map(s => ({ value: s.key, label: s.name })));
+  populateSelect('raga-sel',   DATA.ragas.map(r  => ({ value: r.name, label: r.name })));
+  populateSelect('thala-sel',  DATA.thalas.map(t => ({ value: t.name, label: t.name })));
+
+  ['shruti-sel','raga-sel','thala-sel'].forEach(id =>
+    document.getElementById(id).addEventListener('change', refresh)
+  );
+
+  await refresh();
+}
+
+function populateSelect(id, items) {
+  const el = document.getElementById(id);
+  el.innerHTML = items.map(i => `<option value="${i.value}">${i.label}</option>`).join('');
+}
+
+// ── Refresh (on dropdown change) ─────────────────────────────────────────────
+async function refresh() {
+  const shruti = getShruti();
+  const raga   = getRaga();
+  const thala  = getThala();
+  if (!shruti || !raga || !thala) return;
+
+  // badges
+  document.getElementById('badge-mela').textContent  = `Melakarta #${raga.melakarta_number}`;
+  document.getElementById('badge-thala').textContent = `${thala.name}  ${thala.beats} beats`;
+  document.getElementById('badge-freq').textContent  = `Sa = ${shruti.base_frequency_hz} Hz  (${shruti.name})`;
+
+  renderScale('aroha-body', raga.arohanam,   raga.notes, shruti.base_frequency_hz, '#5eead4');
+  renderScale('avaro-body', raga.avarohanam, raga.notes, shruti.base_frequency_hz, '#fb923c');
+
+  // generate new local composition on selector change
+  await regenerate(false, true);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getShruti() { return DATA.shrutis.find(s => s.key === document.getElementById('shruti-sel').value); }
+function getRaga()   { return DATA.ragas.find(r   => r.name === document.getElementById('raga-sel').value); }
+function getThala()  { return DATA.thalas.find(t  => t.name === document.getElementById('thala-sel').value); }
+
+function noteFreq(baseHz, semitoneOffset) {
+  return Math.round(baseHz * Math.pow(2, semitoneOffset / 12) * 100) / 100;
+}
+
+// ── Scale panels ──────────────────────────────────────────────────────────────
+function renderScale(bodyId, scale, notesDict, baseHz, color) {
+  const body = document.getElementById(bodyId);
+  body.innerHTML = '';
+  scale.forEach(name => {
+    const isUpper = name === "Sa'";
+    const key     = isUpper ? 'Sa' : name;
+    const info    = notesDict[key];
+    const offset  = isUpper ? 12 : (info ? info.semitone_offset : 0);
+    const freq    = noteFreq(baseHz, offset);
+    const display = isUpper ? "S'" : (info ? info.solfege : name);
+
+    const cell = document.createElement('div');
+    cell.className = 'note-cell';
+    cell.innerHTML = `
+      <span class="note-solfege" style="color:${color}">${display}</span>
+      <span class="note-freq">${freq}</span>
+    `;
+    body.appendChild(cell);
+  });
+}
+
+// ── Composition ───────────────────────────────────────────────────────────────
+async function regenerate(useGemini = false, silent = false) {
+  const raga  = getRaga();
+  const thala = getThala();
+  if (!raga || !thala) return;
+
+  const btnLocal  = document.getElementById('btn-local');
+  const btnGemini = document.getElementById('btn-gemini');
+  btnLocal.disabled = btnGemini.disabled = true;
+
+  if (!silent) {
+    setStatus(
+      useGemini
+        ? '<span class="spinner"></span>Asking Gemini for raga-specific notes...'
+        : '<span class="spinner"></span>Generating...',
+      useGemini ? '#7f5af0' : '#c8973a'
+    );
+  }
+
+  try {
+    const res  = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ raga: raga.name, thala: thala.name, use_gemini: useGemini })
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      setStatus('Error: ' + data.error, '#e05a6a');
+    } else {
+      currentAvartanams = data.avartanams;
+      renderComposition(raga, thala, currentAvartanams);
+      if (!silent) {
+        const src = data.source === 'gemini' ? 'Generated using Gemini ✓' : 'Generated';
+        const warn = data.warning ? ` (Gemini fallback: ${data.warning})` : '';
+        setStatus(src + warn, data.source === 'gemini' ? '#5eead4' : '#c8973a');
+      } else {
+        setStatus('', '');
+      }
+    }
+  } catch (e) {
+    setStatus('Network error: ' + e.message, '#e05a6a');
+  } finally {
+    btnLocal.disabled = btnGemini.disabled = false;
+  }
+}
+
+function setStatus(html, color) {
+  const el = document.getElementById('status');
+  el.innerHTML = html;
+  el.style.color = color;
+}
+
+function renderComposition(raga, thala, avartanams) {
+  const table  = document.getElementById('comp-table');
+  const legend = document.getElementById('legend');
+  table.innerHTML = '';
+  legend.innerHTML = '';
+
+  const subdivs = thala.subdivisions;
+  const beats   = thala.beats;
+
+  // map beat index → group
+  const groupOfBeat = {};
+  let idx = 0;
+  subdivs.forEach((size, g) => {
+    for (let i = 0; i < size; i++) groupOfBeat[idx++] = g;
+  });
+
+  // set of beat indices that start a new group (excluding 0)
+  const groupBoundaries = new Set();
+  let b = 0;
+  subdivs.forEach(size => { groupBoundaries.add(b); b += size; });
+
+  avartanams.forEach((cycle, avIdx) => {
+    const tr = document.createElement('tr');
+
+    // roman numeral
+    const tdLabel = document.createElement('td');
+    tdLabel.className = 'av-label';
+    tdLabel.textContent = ROMAN[avIdx] || (avIdx + 1).toString();
+    tr.appendChild(tdLabel);
+
+    cycle.forEach((note, beatIdx) => {
+      // pipe before group boundary (except beat 0)
+      if (groupBoundaries.has(beatIdx) && beatIdx > 0) {
+        const tdPipe = document.createElement('td');
+        tdPipe.className = 'pipe-cell';
+        tdPipe.textContent = '|';
+        tr.appendChild(tdPipe);
+      }
+
+      const color = BEAT_COLORS[groupOfBeat[beatIdx] % BEAT_COLORS.length];
+      const td = document.createElement('td');
+      td.className = 'beat-cell';
+      td.innerHTML = `
+        <div class="beat-note" style="color:${color}">${note}</div>
+        <div class="beat-num">${beatIdx + 1}</div>
+      `;
+      tr.appendChild(td);
+    });
+
+    // double bar
+    const tdEnd = document.createElement('td');
+    tdEnd.className = 'endbar';
+    tdEnd.textContent = '‖';
+    tr.appendChild(tdEnd);
+
+    table.appendChild(tr);
+  });
+
+  // legend
+  const intro = document.createElement('span');
+  intro.textContent = 'Groups:';
+  intro.style.color = 'var(--subtext)';
+  legend.appendChild(intro);
+
+  thala.subdivision_names.forEach((name, g) => {
+    const color = BEAT_COLORS[g % BEAT_COLORS.length];
+    const item  = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `
+      <div class="legend-dot" style="background:${color}"></div>
+      <span style="color:${color}">${name} (${subdivs[g]})</span>
+    `;
+    legend.appendChild(item);
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
